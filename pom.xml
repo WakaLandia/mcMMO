@@ -111,7 +111,7 @@
                     <trimStackTrace>false</trimStackTrace>
                     <excludedGroups>${surefire.excludedGroups}</excludedGroups>
                     <!-- https://javadoc.io/doc/org.mockito/mockito-core/latest/org.mockito/org/mockito/Mockito.html#0.3 -->
-                    <argLine>-javaagent:${org.mockito:mockito-core:jar}</argLine>
+                    <argLine>-javaagent:"${org.mockito:mockito-core:jar}"</argLine>
                 </configuration>
             </plugin>
             <plugin>
