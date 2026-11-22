@@ -3,6 +3,7 @@ package com.gmail.nossr50.util;
 import com.gmail.nossr50.mcMMO;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.time.Duration;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 
@@ -20,6 +21,7 @@ public final class PaperUtil {
 
     /** Cached: {@code Player.lookAt(double, double, double, LookAnchor)} */
     private static final Method LOOK_AT_METHOD;
+    private static final Method IDLE_DURATION_METHOD;
 
     /** Cached: {@code LookAnchor.EYES} enum constant */
     private static final Object LOOK_ANCHOR_EYES;
@@ -48,9 +50,27 @@ public final class PaperUtil {
 
         LOOK_AT_METHOD = lookAt;
         LOOK_ANCHOR_EYES = anchorEyes;
+        Method idleDuration = null;
+        try {
+            idleDuration = Player.class.getMethod("getIdleDuration");
+        } catch (NoSuchMethodException ignored) {
+            // Spigot does not expose the server's inactivity clock.
+        }
+        IDLE_DURATION_METHOD = idleDuration;
     }
 
     private PaperUtil() {
+    }
+
+    public static boolean idleFor(@NotNull Player player, int seconds) {
+        if (seconds <= 0 || IDLE_DURATION_METHOD == null) {
+            return false;
+        }
+        try {
+            return ((Duration) IDLE_DURATION_METHOD.invoke(player)).getSeconds() >= seconds;
+        } catch (ReflectiveOperationException e) {
+            throw new IllegalStateException("Failed to read Paper player idle duration", e);
+        }
     }
 
     /**

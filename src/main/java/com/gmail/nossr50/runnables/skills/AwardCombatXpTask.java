@@ -7,6 +7,7 @@ import com.gmail.nossr50.datatypes.player.McMMOPlayer;
 import com.gmail.nossr50.datatypes.skills.PrimarySkillType;
 import com.gmail.nossr50.mcMMO;
 import com.gmail.nossr50.util.CancellableRunnable;
+import com.gmail.nossr50.util.PaperUtil;
 import org.bukkit.entity.LivingEntity;
 
 public class AwardCombatXpTask extends CancellableRunnable {
@@ -48,7 +49,15 @@ public class AwardCombatXpTask extends CancellableRunnable {
 
         final double finalDamage = damage;
         mcMMO.p.getFoliaLib().getScheduler().runAtEntity(mmoPlayer.getPlayer(),
-                task -> mmoPlayer.beginXpGain(primarySkillType, (int) (finalDamage * baseXp),
-                        xpGainReason, XPGainSource.SELF));
+                task -> awardExperience((int) (finalDamage * baseXp)));
+    }
+
+    void awardExperience(int xp) {
+        // Check the owner on their entity thread, before party sharing or personal XP.
+        if (primarySkillType == PrimarySkillType.TAMING && PaperUtil.idleFor(mmoPlayer.getPlayer(),
+                ExperienceConfig.getInstance().getTamingCombatIdleSeconds())) {
+            return;
+        }
+        mmoPlayer.beginXpGain(primarySkillType, xp, xpGainReason, XPGainSource.SELF);
     }
 }

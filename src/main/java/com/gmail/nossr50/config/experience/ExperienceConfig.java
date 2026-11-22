@@ -325,6 +325,10 @@ public class ExperienceConfig extends BukkitConfig {
         return config.getBoolean("ExploitFix.AcrobaticsDodgeXpFarming", true);
     }
 
+    public int getTamingCombatIdleSeconds() {
+        return config.getInt("ExploitFix.TamingCombatIdleSeconds", 0);
+    }
+
     public boolean isTreeFellerXPReduced() {
         return config.getBoolean("ExploitFix.TreeFellerReducedXP", true);
     }
